@@ -1,8 +1,0 @@
-node_modules
-.serverless
-.vscode
-*.config.js
-.webpack
-_warmup
-**/*.js
-**/webpack.config.js
