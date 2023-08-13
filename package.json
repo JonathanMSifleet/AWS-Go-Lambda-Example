@@ -1,0 +1,58 @@
+{
+  "name": "critickeroverhaul",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "slsDeploy": "cd ./src && serverless deploy --verbose",
+    "forceUpdate": "npx npm-check-updates -u && npm i"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.388.0",
+    "@aws-sdk/util-dynamodb": "^3.388.0",
+    "@middy/core": "^4.6.0",
+    "@middy/http-cors": "^4.6.0",
+    "@sendgrid/mail": "^7.7.0",
+    "@shelf/dynamodb-parallel-scan": "^3.5.3",
+    "bcryptjs": "^2.4.3",
+    "chunk": "0.0.3",
+    "csvtojson": "^2.0.10",
+    "email-validator": "^2.0.4",
+    "image-to-base64": "^2.2.0",
+    "jsonwebtoken": "^9.0.1",
+    "mysql2": "^3.6.0",
+    "node-fetch": "3.3.2",
+    "percentile-rank": "^1.0.6",
+    "query-string": "^8.1.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.119",
+    "@types/aws-sdk": "^2.7.0",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/chunk": "0.0.0",
+    "@types/email-validator": "^1.0.30",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/uuid": "^9.0.2",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
+    "eslint": "^8.47.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.0",
+    "eslint-plugin-import": "^2.28.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.1",
+    "serverless": "^3.34.0",
+    "serverless-esbuild": "^1.45.0",
+    "typescript": "^5.1.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JonathanMSifleet/CritickerOverhaul.git"
+  },
+  "author": "Jonathan Sifleet",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JonathanMSifleet/CritickerOverhaul/issues"
+  },
+  "homepage": "https://github.com/JonathanMSifleet/CritickerOverhaul#readme"
+}

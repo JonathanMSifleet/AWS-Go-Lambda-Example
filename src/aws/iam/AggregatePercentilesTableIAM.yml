@@ -1,0 +1,12 @@
+AggregatePercentilesTableIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:BatchWriteItem
+    - dynamodb:DeleteItem
+    - dynamodb:GetItem
+    - dynamodb:PutItem
+    - dynamodb:Query
+    - dynamodb:UpdateItem
+  Resource:
+    - ${self:custom.AggregatePercentilesTable.arn}
+

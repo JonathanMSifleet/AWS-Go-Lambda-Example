@@ -1,0 +1,38 @@
+UserTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: UserTable
+    BillingMode: PAY_PER_REQUEST
+    AttributeDefinitions:
+      - AttributeName: username
+        AttributeType: S
+      - AttributeName: email
+        AttributeType: S
+      - AttributeName: accessToken
+        AttributeType: S
+      - AttributeName: avatar
+        AttributeType: S
+
+    KeySchema:
+      - AttributeName: username
+        KeyType: HASH
+
+    GlobalSecondaryIndexes:
+      - IndexName: email
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+      - IndexName: accessToken
+        KeySchema:
+          - AttributeName: accessToken
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+      - IndexName: avatar
+        KeySchema:
+          - AttributeName: avatar
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL

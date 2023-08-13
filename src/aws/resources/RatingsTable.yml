@@ -1,0 +1,44 @@
+RatingsTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: RatingsTable
+    BillingMode: PAY_PER_REQUEST
+    AttributeDefinitions:
+      - AttributeName: imdbID
+        AttributeType: N
+      - AttributeName: username
+        AttributeType: S
+      - AttributeName: createdAt
+        AttributeType: N
+      - AttributeName: rating
+        AttributeType: N
+
+    KeySchema:
+      - AttributeName: imdbID
+        KeyType: HASH
+      - AttributeName: username
+        KeyType: RANGE
+
+    GlobalSecondaryIndexes:
+      - IndexName: username
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+      - IndexName: usernameCreatedAt
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+      - IndexName: usernameRating
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+          - AttributeName: rating
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL

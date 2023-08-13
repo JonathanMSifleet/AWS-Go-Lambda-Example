@@ -1,0 +1,22 @@
+FilmsTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: FilmsTable
+    BillingMode: PAY_PER_REQUEST
+    AttributeDefinitions:
+      - AttributeName: imdbID
+        AttributeType: N
+      - AttributeName: releaseYear
+        AttributeType: N
+
+    KeySchema:
+      - AttributeName: imdbID
+        KeyType: HASH
+
+    GlobalSecondaryIndexes:
+      - IndexName: releaseYear
+        KeySchema:
+          - AttributeName: releaseYear
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
