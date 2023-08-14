@@ -1,23 +1,22 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 	"time"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/gofiber/fiber/v2/middleware/cors"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"golang.org/x/crypto/bcrypt"
-	"../../shared/functions/createAWSResErr.go"
-	"../../shared/functions/validationFunctions.go"
 )
 
-var dbClient = dynamodb.New(session.New())
+var cfg, err = config.LoadDefaultConfig(context.Background())
+var dbClient = dynamodb.NewFromConfig(cfg)
 
 type SignupEvent struct {
 	Body string `json:"body"`
@@ -76,43 +75,36 @@ func Signup(event SignupEvent) (HTTPResponse, error) {
 	}, nil
 }
 
-func Handler() interface{} {
-	return cors.New(cors.Config{
-		Next: Signup,
-	})
-}
-
 func GetSignupDate() int64 {
 	return time.Now().Unix() / (24 * 60 * 60) * 24 * 60 * 60
 }
 
 func InsertUserToDB(username, email, password string, memberSince int64) error {
 	input := &dynamodb.PutItemInput{
-		Item: map[string]*dynamodb.AttributeValue{
-			"email": {
-				S: aws.String(email),
+		Item: map[string]types.AttributeValue{
+			"email": &types.AttributeValueMemberS{
+				Value: email,
 			},
-			"isVerified": {
-				BOOL: aws.Bool(false),
+			"isVerified": &types.AttributeValueMemberBOOL{
+				Value: false,
 			},
-			"memberSince": {
-				N: aws.String(fmt.Sprint(memberSince)),
+			"memberSince": &types.AttributeValueMemberN{
+				Value: fmt.Sprint(memberSince),
 			},
-			"numRatings": {
-				N: aws.String("0"),
+			"numRatings": &types.AttributeValueMemberN{
+				Value: "0",
 			},
-			"password": {
-				S: aws.String(password),
+			"password": &types.AttributeValueMemberS{
+				Value: password,
 			},
-			"username": {
-				S: aws.String(username),
+			"username": &types.AttributeValueMemberS{
+				Value: username,
 			},
-        },
-        TableName: aws.String(os.Getenv("USER_TABLE_NAME")),
-        ReturnConsumedCapacity: aws.String("TOTAL"),
-    }
+		},
+		TableName:              aws.String(os.Getenv("USER_TABLE_NAME")),
+		ReturnConsumedCapacity: types.ReturnConsumedCapacityTotal,
+	}
 
-    _, err := dbClient.PutItem(input)
-    return err
+	_, err := dbClient.PutItem(context.Background(), input)
+	return err
 }
-

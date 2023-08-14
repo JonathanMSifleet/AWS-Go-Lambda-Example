@@ -1,3 +1,12 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+)
+
 type IHTTP struct {
 	Headers    *Headers `json:"headers,omitempty"`
 	StatusCode int      `json:"statusCode"`

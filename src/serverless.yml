@@ -1,12 +1,14 @@
 service: GoLambdaExample
 frameworkVersion: '3'
 
+plugins:
+  - serverless-go-plugin
+
 provider:
   name: aws
   runtime: provided.al2
   apiGateway:
     minimumCompressionSize: 1024
-    shouldStartNameWithService: true
   memorySize: 256
   stage: ${opt:stage, 'dev'}
   region: eu-west-2
@@ -29,7 +31,7 @@ functions:
   #         path: user/login
   #         cors: true
   signup:
-    handler: aws/handlers/user/signup.handler
+    handler: go/signup.go
     events:
       - http:
           method: POST
@@ -68,3 +70,7 @@ custom:
 
   bundle:
     linting: true
+
+  go:
+    supportedRuntimes: ["provided.al2"]
+    buildProvidedRuntimeAsBootstrap: true
