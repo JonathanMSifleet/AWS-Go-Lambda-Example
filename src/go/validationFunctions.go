@@ -16,35 +16,26 @@ import (
 	"github.com/badoux/checkmail"
 )
 
-func validateUserInputs(username string, email string) ([]string, error) {
-	errors, err := checkUniqueAttribute("email", email, "email")
-	if err != nil {
-		return nil, err
+func validateUserInputs(username string, email string) []error {
+	var errors []error
+	errors = append(errors, checkUniqueAttribute("email", email, "email"))
+	errors = append(errors, checkUniqueAttribute("username", username, ""))
+
+	validateInput(username, "Username")
+	for _, err := range errors {
+		errors = append(errors, err)
+	}
+	validateInput(email, "Email")
+	for _, err := range errors {
+		errors = append(errors, err)
 	}
 
-	usernameErrors, err := checkUniqueAttribute("username", username, "")
-	if err != nil {
-		return nil, err
-	}
-
-	errors = append(errors, usernameErrors...)
-	usernameErrors, err = validateInput(username, "Username")
-	if err != nil {
-		return nil, err
-	}
-
-	errors = append(errors, usernameErrors...)
-	emailErrors, err := validateInput(email, "Email")
-	if err != nil {
-		return nil, err
-	}
-
-	errors = append(errors, emailErrors...)
-	return errors, nil
+	return errors
 }
 
-func validateInput(value string, valueName string) ([]string, error) {
-	var errors []string
+func validateInput(value string, valueName string) []error {
+	var errors []error
+
 	switch valueName {
 	case "Bio":
 		errors = append(errors, validateLength(value, valueName, 0, 1000))
@@ -80,53 +71,51 @@ func validateInput(value string, valueName string) ([]string, error) {
 				valueName,
 				regexp.MustCompile(`[^A-Za-z0-9]+`),
 				"cannot contain special characters"))
-	default:
-		return nil, fmt.Errorf("invalid value name")
 	}
 
-	return errors, nil
+	return errors
 }
 
-func validateAgainstRegex(value string, name string, regex *regexp.Regexp, message string) string {
+func validateAgainstRegex(value string, name string, regex *regexp.Regexp, message string) error {
 	if regex.MatchString(value) {
-		return fmt.Sprintf("%s %s", name, message)
+		return fmt.Errorf("%s %s", name, message)
 	}
-	return ""
+	return nil
 }
 
-func validateIsEmail(value string) string {
+func validateIsEmail(value string) error {
 	if err := checkmail.ValidateFormat(value); err != nil {
-		return "Email must be valid"
+		return fmt.Errorf("Email must be valid")
 	}
-	return ""
+	return nil
 }
 
-func validateIsWholeNumber(value string, name string) string {
+func validateIsWholeNumber(value string, name string) error {
 	if _, err := strconv.Atoi(value); err != nil {
-		return fmt.Sprintf("%s must be a whole number", name)
+		return fmt.Errorf("%s must be a whole number", name)
 	}
-	return ""
+	return nil
 }
 
-func validateLength(value string, valueName string, min int64, max int64) string {
+func validateLength(value string, valueName string, min int64, max int64) error {
 	if int64(len(value)) < min || int64(len(value)) > max {
-		return fmt.Sprintf("%s must be between %d and %d characters", valueName)
+		return fmt.Errorf("%s must be between %d and %d characters", valueName)
 	}
-	return ""
+	return nil
 }
 
-func validateNotEmpty(value string, name string) string {
+func validateNotEmpty(value string, name string) error {
 	if len(strings.TrimSpace(value)) == 0 {
-		return fmt.Sprintf("%s must not be empty", name)
+		return fmt.Errorf("%s must not be empty", name)
 	}
-	return ""
+	return nil
 }
 
-func validateNotValue(value string, name string, match string) string {
+func validateNotValue(value string, name string, match string) error {
 	if value == match {
-		return fmt.Sprintf("%s must not be %s", name)
+		return fmt.Errorf("%s must not be %s", name)
 	}
-	return ""
+	return nil
 }
 
 func validateValue(value float64, name string, lowerBound float64, upperBound float64) string {
@@ -136,11 +125,11 @@ func validateValue(value float64, name string, lowerBound float64, upperBound fl
 	return ""
 }
 
-func validateWholeNumber(value float64, name string) string {
+func validateWholeNumber(value float64, name string) error {
 	if math.Mod(float64(int64(value)), float64(1)) != 0.0 {
-		return fmt.Sprintf("%s must be a whole number", name)
+		return fmt.Errorf("%s must be a whole number", name)
 	}
-	return ""
+	return nil
 }
 
 func checkUniqueAttribute(keyName string, keyValue string, indexName string) error {
