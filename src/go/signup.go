@@ -13,6 +13,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"golang.org/x/crypto/bcrypt"
+	"shared/createAWSResErr.go"
+	"shared/validationFunctions.go"
 )
 
 var cfg, err = config.LoadDefaultConfig(context.Background())

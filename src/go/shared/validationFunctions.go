@@ -1,4 +1,4 @@
-package main
+package validationFunctions
 
 import (
 	"context"
@@ -118,11 +118,11 @@ func validateNotValue(value string, name string, match string) error {
 	return nil
 }
 
-func validateValue(value float64, name string, lowerBound float64, upperBound float64) string {
+func validateValue(value float64, name string, lowerBound float64, upperBound float64) error {
 	if value < lowerBound || value > upperBound {
-		return fmt.Sprintf("%s must be between %f and %f", name)
+		return fmt.Errorf("%s must be between %f and %f", name)
 	}
-	return ""
+	return nil
 }
 
 func validateWholeNumber(value float64, name string) error {
