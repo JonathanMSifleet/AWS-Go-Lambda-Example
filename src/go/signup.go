@@ -12,9 +12,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"golang.org/x/crypto/bcrypt"
-	"shared/createAWSResErr.go"
-	"shared/validationFunctions.go"
 )
 
 var cfg, err = config.LoadDefaultConfig(context.Background())
@@ -64,6 +63,7 @@ func Signup(event SignupEvent) (HTTPResponse, error) {
 	if err != nil {
 		return HTTPResponse{}, err
 	}
+
 	err = InsertUserToDB(username, email, string(salt), memberSince)
 	if err != nil {
 		return CreateAWSResErr(500, []string{err.Error()}), nil
@@ -81,14 +81,19 @@ func GetSignupDate() int64 {
 	return time.Now().Unix() / (24 * 60 * 60) * 24 * 60 * 60
 }
 
-func InsertUserToDB(username, email, password string, memberSince int64) error {
+func InsertUserToDB(username string, email string, password string, memberSince int64) error {
+	item := Item{
+		email:       email,
+		memberSince: memberSince,
+		numRatings:  0,
+		password:    password,
+		username:    username,
+	}
+
 	input := &dynamodb.PutItemInput{
 		Item: map[string]types.AttributeValue{
 			"email": &types.AttributeValueMemberS{
 				Value: email,
-			},
-			"isVerified": &types.AttributeValueMemberBOOL{
-				Value: false,
 			},
 			"memberSince": &types.AttributeValueMemberN{
 				Value: fmt.Sprint(memberSince),

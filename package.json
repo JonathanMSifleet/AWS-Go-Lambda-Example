@@ -12,7 +12,6 @@
   },
   "homepage": "https://github.com/JonathanMSifleet/AWS-Go-Lambda-Example#readme",
   "devDependencies": {
-    "serverless": "^3.34.0",
-    "serverless-go-plugin": "^2.2.0"
+    "serverless": "^3.34.0"
   }
 }
