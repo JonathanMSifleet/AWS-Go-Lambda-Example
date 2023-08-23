@@ -23,8 +23,7 @@ plugins:
 package:
   individually: true
   include:
-    - src/createAWSResError.go
-    - src/validationFunctions.go
+    - src/shared/**/*.go
 
 functions:
   signup:
@@ -64,7 +63,8 @@ custom:
   go:
     supportedRuntimes:
       - provided.al2
-    cmd: GOOS=linux GOARCH=arm64 go build -ldflags="-s -w"' # compile command
+    cmd: GOOS=linux GOARCH=arm64 go build -ldflags="-s -w"'
+    monorepo: true
 
   UserTable:
     name: !Ref UserTable
