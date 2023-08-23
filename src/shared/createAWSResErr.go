@@ -1,4 +1,4 @@
-package createAWSResErr
+package shared
 
 import (
 	"fmt"

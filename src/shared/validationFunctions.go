@@ -1,4 +1,4 @@
-package validationFunctions
+package shared
 
 import (
 	"context"

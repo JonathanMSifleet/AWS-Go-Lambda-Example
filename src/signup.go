@@ -6,11 +6,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"shared/createAWSResErr"
-	"shared/validationFunctions"
 	"strings"
 	"time"
 
+	"github.com/JonathanMSifleet/AWS-Go-Lambda-Example/m/v2/shared"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -53,12 +52,12 @@ func handler(event SignupEvent) (HTTPResponse, error) {
 	username := strings.TrimSpace(body.Username)
 	email := strings.TrimSpace(body.Email)
 
-	errors, err := validationFunctions.validateUserInputs(username, email)
+	errors, err := shared.validateUserInputs(username, email)
 	if err != nil {
 		return HTTPResponse{}, err
 	}
 	if len(errors) != 0 {
-		return createAWSResErr.CreateAWSResErr(400, errors), nil
+		return shared.CreateAWSResErr(400, errors), nil
 	}
 
 	memberSince := GetSignupDate()
@@ -70,7 +69,7 @@ func handler(event SignupEvent) (HTTPResponse, error) {
 
 	err = InsertUserToDB(username, email, string(salt), memberSince)
 	if err != nil {
-		return createAWSResErr.createAWSResErr(500, []string{err.Error()}), nil
+		return shared.createAWSResErr(500, []string{err.Error()}), nil
 	}
 
 	log.Println("Signed up successfully")
