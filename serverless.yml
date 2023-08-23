@@ -3,6 +3,7 @@ frameworkVersion: '3'
 
 provider:
   name: aws
+  architecture: arm64
   runtime: provided.al2
   apiGateway:
     minimumCompressionSize: 1024
@@ -14,21 +15,20 @@ provider:
   iam:
     role:
       statements:
-        - ${file(src/aws/iam/UserTableIAM.yml):UserTableIAM}
+        - ${file(serverless/iam/UserTableIAM.yml):UserTableIAM}
+
+plugins:
+ - serverless-go-plugin
 
 package:
   individually: true
+  include:
+    - src/createAWSResError.go
+    - src/validationFunctions.go
 
 functions:
-  # login:
-  #   handler: aws/handlers/user/login.handler
-  #   events:
-  #     - http:
-  #         method: POST
-  #         path: user/login
-  #         cors: true
   signup:
-    handler: go/signup.go
+    handler: src/signup.go
     events:
       - http:
           method: POST
@@ -36,7 +36,7 @@ functions:
           cors: true
 resources:
   Resources:
-    UserTable: ${file(src/aws/resources/UserTable.yml):UserTable}
+    UserTable: ${file(serverless/resources/UserTable.yml):UserTable}
 
     # This response is needed for custom authorizer failures cors support
     GatewayResponse:
@@ -61,6 +61,11 @@ resources:
         StatusCode: '401'
 
 custom:
+  go:
+    supportedRuntimes:
+      - provided.al2
+    cmd: GOOS=linux GOARCH=arm64 go build -ldflags="-s -w"' # compile command
+
   UserTable:
     name: !Ref UserTable
     arn: !GetAtt UserTable.Arn

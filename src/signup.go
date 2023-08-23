@@ -6,14 +6,18 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"shared/createAWSResErr"
+	"shared/validationFunctions"
 	"strings"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"golang.org/x/crypto/bcrypt"
+
 )
 
 var cfg, err = config.LoadDefaultConfig(context.Background())
@@ -35,10 +39,10 @@ type HTTPResponse struct {
 }
 
 func main() {
-	lambda.Start(Signup)
+	lambda.Start(handler)
 }
 
-func Signup(event SignupEvent) (HTTPResponse, error) {
+func handler(event SignupEvent) (HTTPResponse, error) {
 	var body SignupBody
 	err := json.Unmarshal([]byte(event.Body), &body)
 	if err != nil {
@@ -49,12 +53,12 @@ func Signup(event SignupEvent) (HTTPResponse, error) {
 	username := strings.TrimSpace(body.Username)
 	email := strings.TrimSpace(body.Email)
 
-	errors, err := ValidateUserInputs(username, email)
+	errors, err := validationFunctions.validateUserInputs(username, email)
 	if err != nil {
 		return HTTPResponse{}, err
 	}
 	if len(errors) != 0 {
-		return CreateAWSResErr(400, errors), nil
+		return createAWSResErr.CreateAWSResErr(400, errors), nil
 	}
 
 	memberSince := GetSignupDate()
@@ -66,7 +70,7 @@ func Signup(event SignupEvent) (HTTPResponse, error) {
 
 	err = InsertUserToDB(username, email, string(salt), memberSince)
 	if err != nil {
-		return CreateAWSResErr(500, []string{err.Error()}), nil
+		return createAWSResErr.createAWSResErr(500, []string{err.Error()}), nil
 	}
 
 	log.Println("Signed up successfully")
@@ -82,14 +86,6 @@ func GetSignupDate() int64 {
 }
 
 func InsertUserToDB(username string, email string, password string, memberSince int64) error {
-	item := Item{
-		email:       email,
-		memberSince: memberSince,
-		numRatings:  0,
-		password:    password,
-		username:    username,
-	}
-
 	input := &dynamodb.PutItemInput{
 		Item: map[string]types.AttributeValue{
 			"email": &types.AttributeValueMemberS{

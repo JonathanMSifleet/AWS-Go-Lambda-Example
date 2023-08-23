@@ -11,7 +11,11 @@
     "url": "https://github.com/JonathanMSifleet/AWS-Go-Lambda-Example/issues"
   },
   "homepage": "https://github.com/JonathanMSifleet/AWS-Go-Lambda-Example#readme",
+  "scripts": {
+    "deploy": "serverless deploy"
+  },
   "devDependencies": {
-    "serverless": "^3.34.0"
+    "serverless": "^3.34.0",
+    "serverless-go-plugin": "^2.2.0"
   }
 }
